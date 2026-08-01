@@ -307,6 +307,76 @@ footer .fine{font-size:12px; color:rgba(255,251,252,0.6);}
 }
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
+/* ---------- Address / checkout modal ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(58,48,64,0.45);
+  opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:70;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open{opacity:1; pointer-events:auto;}
+.modal{
+  background:var(--cream);
+  border-radius:var(--radius-lg);
+  width:100%; max-width:440px;
+  max-height:90vh; overflow-y:auto;
+  box-shadow:0 20px 50px rgba(58,48,64,0.25);
+  transform:translateY(16px) scale(0.98);
+  transition:transform .25s cubic-bezier(.22,1,.36,1);
+}
+.modal-overlay.open .modal{transform:translateY(0) scale(1);}
+.modal-head{
+  padding:22px 22px 12px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid rgba(58,48,64,0.08);
+}
+.modal-head h3{font-size:19px; font-weight:600;}
+.modal-close{
+  width:32px;height:32px;border-radius:50%; background:var(--white);
+  display:flex;align-items:center;justify-content:center; font-size:16px;
+}
+.modal-body{padding:18px 22px 6px;}
+.field{margin-bottom:14px;}
+.field label{
+  display:block; font-size:12.5px; font-weight:800; color:var(--ink); margin-bottom:6px;
+}
+.field input, .field textarea{
+  width:100%; padding:11px 13px; border-radius:12px;
+  border:1.5px solid rgba(58,48,64,0.15);
+  font-family:'Nunito Sans'; font-size:13.5px; color:var(--ink);
+  background:var(--white);
+  outline:none;
+  transition:border-color .15s;
+}
+.field input:focus, .field textarea:focus{border-color:var(--accent-dark);}
+.field textarea{resize:vertical; min-height:64px;}
+.field-row{display:flex; gap:10px;}
+.field-row .field{flex:1;}
+.modal-summary{
+  background:var(--white); border-radius:14px; padding:12px 14px;
+  margin:6px 0 16px; font-size:12.5px; color:var(--ink-soft);
+}
+.modal-summary .row{display:flex; justify-content:space-between; padding:3px 0;}
+.modal-summary .row.total{
+  border-top:1px solid rgba(58,48,64,0.1); margin-top:6px; padding-top:8px;
+  font-weight:800; color:var(--ink); font-size:13.5px;
+}
+.modal-foot{padding:6px 22px 22px;}
+.wa-btn{
+  width:100%; padding:15px; border-radius:30px;
+  background:#25D366; color:#fff;
+  font-weight:800; font-size:14.5px;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .15s;
+}
+.wa-btn:hover{transform:translateY(-2px);}
+.wa-btn svg{width:18px;height:18px;}
+.field-error{
+  font-size:11px; color:var(--accent-dark); font-weight:700; margin-top:5px; display:none;
+}
+.field.invalid input, .field.invalid textarea{border-color:var(--accent-dark);}
+.field.invalid .field-error{display:block;}
+
 @media (max-width:820px){
   .nav-links{display:none;}
   .hero{grid-template-columns:1fr; padding-top:36px;}
@@ -403,32 +473,81 @@ Cute Cart
 <div class="drawer-items" id="drawerItems"></div>
 <div class="drawer-foot" id="drawerFoot" style="display:none;">
 <div class="sub-row"><span class="label">Subtotal</span><span class="val" id="subtotalVal">₹0</span></div>
-<button class="checkout-btn">Checkout →</button>
+<button class="checkout-btn" id="checkoutBtn">Checkout →</button>
 <div class="drawer-ship">Free gift-wrap on every order</div>
 </div>
 </aside>
+
+<!-- Address / checkout modal -->
+<div class="modal-overlay" id="checkoutOverlay">
+<div class="modal">
+<div class="modal-head">
+<h3>📍 Delivery details</h3>
+<button class="modal-close" id="checkoutClose" aria-label="Close">✕</button>
+</div>
+<div class="modal-body">
+<form id="addressForm" novalidate>
+<div class="field" id="f-name">
+<label for="ca-name">Full name</label>
+<input type="text" id="ca-name" name="name" placeholder="e.g. Anjali Menon" autocomplete="name">
+<div class="field-error">Please enter your name</div>
+</div>
+<div class="field" id="f-phone">
+<label for="ca-phone">Phone number</label>
+<input type="tel" id="ca-phone" name="phone" placeholder="e.g. 9876543210" autocomplete="tel">
+<div class="field-error">Please enter a valid 10-digit phone number</div>
+</div>
+<div class="field" id="f-address">
+<label for="ca-address">Address (house/street/area)</label>
+<textarea id="ca-address" name="address" placeholder="House name, street, landmark"></textarea>
+<div class="field-error">Please enter your address</div>
+</div>
+<div class="field-row">
+<div class="field" id="f-city">
+<label for="ca-city">Town / City</label>
+<input type="text" id="ca-city" name="city" placeholder="e.g. Thrissur">
+<div class="field-error">Required</div>
+</div>
+<div class="field" id="f-pincode">
+<label for="ca-pincode">Pincode</label>
+<input type="text" id="ca-pincode" name="pincode" placeholder="e.g. 680001" inputmode="numeric">
+<div class="field-error">Enter a valid 6-digit pincode</div>
+</div>
+</div>
+<div class="field">
+<label for="ca-note">Note for the seller (optional)</label>
+<textarea id="ca-note" name="note" placeholder="Gift note, delivery instructions, etc."></textarea>
+</div>
+</form>
+
+<div class="modal-summary" id="modalSummary"></div>
+</div>
+<div class="modal-foot">
+<button class="wa-btn" id="proceedWaBtn">
+<svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.699 4.607 1.902 6.472L4 29l7.72-1.868A11.94 11.94 0 0 0 16.001 27C22.629 27 28 21.627 28 15S22.629 3 16.001 3zm0 21.818a9.77 9.77 0 0 1-4.98-1.362l-.357-.212-4.583 1.109 1.127-4.463-.233-.366A9.78 9.78 0 0 1 5.182 15c0-5.968 4.851-10.818 10.819-10.818S26.818 9.032 26.818 15 21.968 24.818 16.001 24.818zm5.593-8.14c-.306-.153-1.81-.892-2.09-.994-.28-.102-.484-.153-.688.153-.204.306-.789.994-.967 1.198-.178.204-.356.23-.662.077-.306-.153-1.293-.477-2.463-1.52-.911-.812-1.526-1.815-1.704-2.121-.178-.306-.019-.471.134-.624.138-.137.306-.357.459-.535.153-.178.204-.306.306-.51.102-.204.051-.383-.026-.536-.077-.153-.688-1.658-.943-2.272-.248-.596-.5-.516-.688-.526-.178-.009-.382-.011-.586-.011-.204 0-.535.077-.815.383-.28.306-1.069 1.045-1.069 2.548 0 1.503 1.094 2.955 1.247 3.159.153.204 2.152 3.287 5.215 4.61.729.315 1.298.503 1.741.643.731.232 1.396.199 1.922.121.586-.088 1.81-.74 2.065-1.454.255-.714.255-1.326.178-1.454-.076-.128-.28-.204-.586-.357z"/></svg>
+Proceed on WhatsApp
+</button>
+</div>
+</div>
+</div>
 
 <div class="toast" id="toast">Added to cart 🎉</div>
 
 <script>
 (function(){
 
-// --- PRODUCT IMAGES ---
-// Each "img" below is a real stock photo (free-license, from Unsplash) standing in
-// for the actual product photo. They're close-but-not-exact matches for a few niche
-// items (e.g. the ice cream highlighter, chocolate bar highlighters) since no stock
-// photo of those exact items exists.
-// To use your own product photo, just replace the "img" value with your image URL
-// (or a local path like "images/panda-cover.jpg") — nothing else needs to change.
+// --- WhatsApp seller number (with country code, no + or spaces) ---
+const WHATSAPP_NUMBER = "918086797099";
 
- 
+// --- PRODUCT IMAGES ---
+// Each "img" is a direct image URL/path used as the <img src> for that product.
+// Replace with your own product photo URL or local file path any time.
 const products = [
-  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:299, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
-  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:230, img:"staple.jpeg", badge:null},
-  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:199, img:"memonote.jpeg", badge:"New"},
-  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:100, mrp:149, img:"cookie.jpeg", badge:null},
+  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:299, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
+  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:230, mrp:130, img:"staple.jpeg", badge:null},
+  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:199, mrp:110, img:"memonote.jpeg", badge:"New"},
+  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:149, mrp:100, img:"cookie.jpeg", badge:null},
 ];
- 
 
 let cart = {}; // id -> qty
 
@@ -463,6 +582,14 @@ const drawerItems = document.getElementById('drawerItems');
 const drawerFoot = document.getElementById('drawerFoot');
 const subtotalVal = document.getElementById('subtotalVal');
 const toast = document.getElementById('toast');
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+// Checkout modal elements
+const checkoutOverlay = document.getElementById('checkoutOverlay');
+const checkoutClose = document.getElementById('checkoutClose');
+const addressForm = document.getElementById('addressForm');
+const modalSummary = document.getElementById('modalSummary');
+const proceedWaBtn = document.getElementById('proceedWaBtn');
 
 function totalCount(){
   return Object.values(cart).reduce((a,b)=>a+b,0);
@@ -551,7 +678,109 @@ drawerItems.addEventListener('click', e=>{
 cartBtn.addEventListener('click', openDrawer);
 drawerClose.addEventListener('click', closeDrawer);
 overlay.addEventListener('click', closeDrawer);
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); });
+
+// ---------- Checkout modal logic ----------
+function renderModalSummary(){
+  const ids = Object.keys(cart);
+  const rows = ids.map(id=>{
+    const p = products.find(x=>x.id==id);
+    const qty = cart[id];
+    return `<div class="row"><span>${p.name} × ${qty}</span><span>${formatRs(p.price*qty)}</span></div>`;
+  }).join('');
+  modalSummary.innerHTML = rows + `<div class="row total"><span>Subtotal</span><span>${formatRs(totalPrice())}</span></div>`;
+}
+
+function openCheckout(){
+  if(totalCount()===0){
+    showToast("Your cart is empty 🛒");
+    return;
+  }
+  renderModalSummary();
+  closeDrawer();
+  checkoutOverlay.classList.add('open');
+}
+function closeCheckout(){
+  checkoutOverlay.classList.remove('open');
+}
+
+checkoutBtn.addEventListener('click', openCheckout);
+checkoutClose.addEventListener('click', closeCheckout);
+checkoutOverlay.addEventListener('click', e=>{
+  if(e.target === checkoutOverlay) closeCheckout();
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ closeDrawer(); closeCheckout(); }
+});
+
+function setFieldError(fieldId, isInvalid){
+  const el = document.getElementById(fieldId);
+  el.classList.toggle('invalid', isInvalid);
+}
+
+function validateAddressForm(){
+  const name = document.getElementById('ca-name').value.trim();
+  const phone = document.getElementById('ca-phone').value.trim();
+  const address = document.getElementById('ca-address').value.trim();
+  const city = document.getElementById('ca-city').value.trim();
+  const pincode = document.getElementById('ca-pincode').value.trim();
+
+  let valid = true;
+
+  const nameOk = name.length > 1;
+  setFieldError('f-name', !nameOk); if(!nameOk) valid = false;
+
+  const phoneOk = /^[6-9]\d{9}$/.test(phone.replace(/\D/g,''));
+  setFieldError('f-phone', !phoneOk); if(!phoneOk) valid = false;
+
+  const addressOk = address.length > 4;
+  setFieldError('f-address', !addressOk); if(!addressOk) valid = false;
+
+  const cityOk = city.length > 1;
+  setFieldError('f-city', !cityOk); if(!cityOk) valid = false;
+
+  const pincodeOk = /^\d{6}$/.test(pincode);
+  setFieldError('f-pincode', !pincodeOk); if(!pincodeOk) valid = false;
+
+  return valid ? {name, phone, address, city, pincode, note: document.getElementById('ca-note').value.trim()} : null;
+}
+
+function buildWhatsAppMessage(details){
+  const ids = Object.keys(cart);
+  const lines = [];
+  lines.push("🛍️ *New order — Cute Cart*");
+  lines.push("");
+  lines.push("*Order summary:*");
+  ids.forEach(id=>{
+    const p = products.find(x=>x.id==id);
+    const qty = cart[id];
+    lines.push(`• ${p.name} × ${qty} — ${formatRs(p.price*qty)}`);
+  });
+  lines.push(`*Subtotal:* ${formatRs(totalPrice())}`);
+  lines.push("");
+  lines.push("*Delivery details:*");
+  lines.push(`Name: ${details.name}`);
+  lines.push(`Phone: ${details.phone}`);
+  lines.push(`Address: ${details.address}`);
+  lines.push(`City: ${details.city}`);
+  lines.push(`Pincode: ${details.pincode}`);
+  if(details.note){
+    lines.push("");
+    lines.push(`Note: ${details.note}`);
+  }
+  return lines.join("\n");
+}
+
+proceedWaBtn.addEventListener('click', ()=>{
+  const details = validateAddressForm();
+  if(!details) return;
+
+  const message = buildWhatsAppMessage(details);
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+
+  closeCheckout();
+  showToast("Order sent — continue on WhatsApp 💬");
+});
 
 renderCart();
 })();
