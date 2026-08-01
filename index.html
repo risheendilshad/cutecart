@@ -414,25 +414,27 @@ Cute Cart
 (function(){
 
 // --- PRODUCT IMAGES ---
-// Each "img" below is a temporary placeholder built from the product name/colors.
-// To use your own photo, just replace the value of "img" with your image URL
+// Each "img" below is a real stock photo (free-license, from Unsplash) standing in
+// for the actual product photo. They're close-but-not-exact matches for a few niche
+// items (e.g. the ice cream highlighter, chocolate bar highlighters) since no stock
+// photo of those exact items exists.
+// To use your own product photo, just replace the "img" value with your image URL
 // (or a local path like "images/panda-cover.jpg") — nothing else needs to change.
-function placeholder(label, bg, fg){
-  return `https://placehold.co/500x450/${bg}/${fg}?text=${encodeURIComponent(label)}&font=raleway`;
-}
 
+ 
 const products = [
-  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:599, mrp:749, img:placeholder("Ice cream highlighter","F79FC4","3A3040"), badge:"Bestseller"},
-  {id:2, name:"Chocolate Bar Highlighter Set", desc:"Realistic choco-bar highlighters in a handy zip pouch.", price:249, mrp:null, img:placeholder("Highlighters","BEE9F7","3A3040"), badge:null},
-  {id:3, name:"Cuteness Overload Surprise Box", desc:"A mystery mix of 5+ cute goodies, gift-wrapped and ready to send.", price:999, mrp:1199, img:placeholder("Surprise Box","FFD6E8","3A3040"), badge:"New"},
-  {id:4, name:"Best Friend Birthday Box", desc:"Everything you need to say happy birthday, best-friend style.", price:549, mrp:null, img:placeholder("Birthday Box","6FC6E8","FFFFFF"), badge:null},
-  {id:5, name:"Kawaii Stationery Set", desc:"Pens, a notepad and stickers in soft pastel packaging.", price:399, mrp:479, img:placeholder("Stationery","FFD6E8","3A3040"), badge:null},
-  {id:6, name:"Mini Plush Keychain", desc:"A pocket-sized plushie that clips onto any bag.", price:199, mrp:null, img:placeholder("Keychain","BEE9F7","3A3040"), badge:null},
-  {id:7, name:"Cozy Fleece Mini Blanket", desc:"A soft throw blanket, perfect for movie nights in.", price:699, mrp:849, img:placeholder("Mini Blanket","F79FC4","3A3040"), badge:null},
-  {id:8, name:"Love At First Sight Combo", desc:"A card, a plushie and chocolates, bundled and ready to gift.", price:749, mrp:null, img:placeholder("Combo Gift","6FC6E8","FFFFFF"), badge:"Bestseller"},
-  {id:9, name:"Pastel Sticky Notes Set", desc:"Five pads of soft-tone sticky notes for study or work.", price:149, mrp:null, img:placeholder("Sticky Notes","FFD6E8","3A3040"), badge:null},
-  {id:10, name:"Cute Cart Gift Basket", desc:"Our signature basket — snacks, a plushie and a handwritten card.", price:899, mrp:1099, img:placeholder("Gift Basket","BEE9F7","3A3040"), badge:"New"},
+  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:599, mrp:749, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
+  {id:2, name:"Chocolate Bar Highlighter Set", desc:"Realistic choco-bar highlighters in a handy zip pouch.", price:249, mrp:null, img:"https://images.unsplash.com/photo-1462642109801-4ac2971a3a51?w=600&h=540&fit=crop&auto=format&q=70", badge:null},
+  {id:3, name:"Cuteness Overload Surprise Box", desc:"A mystery mix of 5+ cute goodies, gift-wrapped and ready to send.", price:999, mrp:1199, img:"https://images.unsplash.com/photo-1521478706270-f2e33c203d95?w=600&h=540&fit=crop&auto=format&q=70", badge:"New"},
+  {id:4, name:"Best Friend Birthday Box", desc:"Everything you need to say happy birthday, best-friend style.", price:549, mrp:null, img:"https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600&h=540&fit=crop&auto=format&q=70", badge:null},
+  {id:5, name:"Kawaii Stationery Set", desc:"Pens, a notepad and stickers in soft pastel packaging.", price:399, mrp:479, img:"https://images.unsplash.com/photo-1599008633840-052c7f756385?w=600&h=540&fit=crop&auto=format&q=70", badge:null},
+  {id:6, name:"Mini Plush Keychain", desc:"A pocket-sized plushie that clips onto any bag.", price:199, mrp:null, img:"https://images.unsplash.com/photo-1758555225970-5167a1a8d697?w=600&h=540&fit=crop&auto=format&q=70", badge:null},
+  {id:7, name:"Cozy Fleece Mini Blanket", desc:"A soft throw blanket, perfect for movie nights in.", price:699, mrp:849, img:"https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=600&h=540&fit=crop&auto=format&q=70", badge:null},
+  {id:8, name:"Love At First Sight Combo", desc:"A card, a plushie and chocolates, bundled and ready to gift.", price:749, mrp:null, img:"https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=600&h=540&fit=crop&auto=format&q=70", badge:"Bestseller"},
+  {id:9, name:"Pastel Sticky Notes Set", desc:"Five pads of soft-tone sticky notes for study or work.", price:149, mrp:null, img:"https://images.unsplash.com/photo-1462642109801-4ac2971a3a51?w=600&h=540&fit=crop&auto=format&q=70", badge:null},
+  {id:10, name:"Cute Cart Gift Basket", desc:"Our signature basket — snacks, a plushie and a handwritten card.", price:899, mrp:1099, img:"https://images.unsplash.com/photo-1608755728617-aefab37d2edd?w=600&h=540&fit=crop&auto=format&q=70", badge:"New"},
 ];
+ 
 
 let cart = {}; // id -> qty
 
