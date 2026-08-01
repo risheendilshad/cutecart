@@ -422,9 +422,9 @@ Cute Cart
 
 <section class="hero" id="about">
 <div>
-<div>Ships across Kerala &amp; India</div>
+<div>Ships across Kerala &amp; India</div><br>
 <h1>The ultimate <span>cozy surprise</span><br>for your favorite person.</h1>
-<p>Handpicked plush hot-water bottle covers, gift baskets and kawaii stationery, packed with love and delivered to your door.</p>
+<p>Handpicked cute gift items and kawaii stationery, packed with love and delivered to your door.</p>
 <div class="hero-actions">
 <a href="#shop" class="btn-primary">Shop now</a>
 <a href="#about" class="btn-ghost">Our story</a>
@@ -460,7 +460,7 @@ Cute Cart
 </span>
 Cute Cart
 </div>
-<div class="fine">Made with 🩷 in Kerala · Shipping all over India</div>
+<div class="fine">Made with 🩷 Risheen Dilshad  · Shipping all over India</div>
 </div>
 </footer>
 
@@ -543,10 +543,10 @@ const WHATSAPP_NUMBER = "918086797099";
 // Each "img" is a direct image URL/path used as the <img src> for that product.
 // Replace with your own product photo URL or local file path any time.
 const products = [
-  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:299, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
-  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:230, mrp:130, img:"staple.jpeg", badge:null},
-  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:199, mrp:110, img:"memonote.jpeg", badge:"New"},
-  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:149, mrp:100, img:"cookie.jpeg", badge:null},
+  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
+  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:130, img:"staple.jpeg", badge:null},
+  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:110, img:"memonote.jpeg", badge:"New"},
+  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:100, mrp:100, img:"cookie.jpeg", badge:null},
 ];
 
 let cart = {}; // id -> qty
@@ -747,7 +747,7 @@ function validateAddressForm(){
 function buildWhatsAppMessage(details){
   const ids = Object.keys(cart);
   const lines = [];
-  lines.push("🛍️ *New order — Cute Cart*");
+  lines.push("🛍️ *Hi*");
   lines.push("");
   lines.push("*Order summary:*");
   ids.forEach(id=>{
