@@ -135,6 +135,19 @@ header{
   border:1.5px solid rgba(58,48,64,0.18);
   color:var(--ink);
 }
+.hero-art{
+  position:relative; aspect-ratio:1/0.85;
+  border-radius:28px;
+  background:linear-gradient(155deg, var(--sky) 0%, var(--pink) 100%);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.hero-art::before, .hero-art::after{
+  content:""; position:absolute; border-radius:50%;
+}
+.hero-art::before{width:120px;height:120px;background:rgba(255,255,255,0.45); top:-30px; left:-30px;}
+.hero-art::after{width:80px;height:80px;background:rgba(255,255,255,0.4); bottom:20px; right:30px;}
+.hero-art-emoji{font-size:104px; filter:drop-shadow(0 10px 18px rgba(58,48,64,0.18)); position:relative; z-index:1;}
 
 /* ---------- Strip ---------- */
 .strip{
@@ -311,7 +324,8 @@ footer .fine{font-size:12px; color:rgba(255,251,252,0.6);}
   .nav-links{display:none;}
   .hero{grid-template-columns:1fr; padding-top:36px;}
   .hero h1{font-size:32px;}
-  }
+  .hero-art{order:-1; aspect-ratio:1/0.6;}
+}
 
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important; transition:none !important;}
@@ -361,8 +375,9 @@ Cute Cart
 <a href="#about" class="btn-ghost">Our story</a>
 </div>
 </div>
-<div><img src="cart.png"></div>
-
+<div class="hero-art">
+<div class="hero-art-emoji">🐼</div>
+</div>
 </section>
 
 <div class="strip">
