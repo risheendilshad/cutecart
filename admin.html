@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -273,7 +272,7 @@ Cute Cart <span class="tag">Admin</span>
 </div>
 
 <div class="note-box">
-<b>How this works:</b> products you add, edit or delete here are saved in this browser and will show up on <b>index.html</b> whenever it's opened in the same browser. To make changes permanent for every visitor (any device), click <b>"Copy product code"</b> and paste it over the <code>DEFAULT_PRODUCTS</code> array in index.html, then re-upload the file to your site.
+<b>How this works:</b> products you add, edit or delete here are saved in this browser and will show up on <b>index.html</b> whenever it's opened in the same browser. To make changes permanent for every visitor (any device), click <b>"Copy product code"</b> and paste it over the <code>DEFAULT_PRODUCTS</code> array in index.html, then re-upload the file to your site. Uploaded photos are embedded directly in that code, so there's no separate image file to upload to git — just the one HTML file.
 </div>
 
 <div id="gridWrap">
@@ -313,10 +312,13 @@ Cute Cart <span class="tag">Admin</span>
 </div>
 </div>
 <div class="field" id="f-pimg">
-<label for="p-img">Image URL or filename</label>
-<input type="text" id="p-img" placeholder="e.g. icecreamhighliter.jpeg or https://...">
-<div class="field-hint">Paste a link, or the exact filename of an image sitting next to index.html.</div>
-<div class="field-error">Please add an image URL or filename</div>
+<label for="p-imgFile">Product image</label>
+<input type="file" id="p-imgFile" accept="image/*">
+<div class="field-hint" id="uploadHint">Upload a photo from your device — it gets embedded directly in the product data, no separate file needed.</div>
+<button type="button" class="btn btn-ghost btn-sm" id="removeUploadBtn" style="display:none; margin-top:8px;">✕ Remove uploaded image</button>
+<div style="margin:12px 0 4px; font-size:11px; font-weight:800; color:var(--ink-soft);">— or paste an image URL —</div>
+<input type="text" id="p-img" placeholder="https://...">
+<div class="field-error">Please upload an image or paste a URL</div>
 </div>
 <div class="field">
 <label for="p-badge">Badge (optional)</label>
@@ -401,7 +403,12 @@ const pDesc = document.getElementById('p-desc');
 const pPrice = document.getElementById('p-price');
 const pMrp = document.getElementById('p-mrp');
 const pImg = document.getElementById('p-img');
+const pImgFile = document.getElementById('p-imgFile');
+const removeUploadBtn = document.getElementById('removeUploadBtn');
+const uploadHint = document.getElementById('uploadHint');
 const pBadge = document.getElementById('p-badge');
+
+let uploadedImageData = null; // base64 data URL, if the admin uploaded a file
 
 const toast = document.getElementById('toast');
 
@@ -503,8 +510,12 @@ function clearFieldErrors(){
   });
 }
 
+function currentImgValue(){
+  return uploadedImageData || pImg.value.trim();
+}
+
 function updatePreview(){
-  const url = pImg.value.trim();
+  const url = currentImgValue();
   if(url){
     previewThumb.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=\\'ph-empty\\'>Can\\'t load this image</span>';">`;
   } else {
@@ -513,6 +524,41 @@ function updatePreview(){
 }
 pImg.addEventListener('input', updatePreview);
 
+function setUploadedState(dataUrl, fileLabel){
+  uploadedImageData = dataUrl;
+  pImg.value = '';
+  pImg.disabled = true;
+  pImg.placeholder = fileLabel ? `Using uploaded file: ${fileLabel}` : 'Using uploaded image';
+  removeUploadBtn.style.display = 'inline-flex';
+  updatePreview();
+}
+function clearUploadedState(){
+  uploadedImageData = null;
+  pImgFile.value = '';
+  pImg.disabled = false;
+  pImg.placeholder = 'https://...';
+  removeUploadBtn.style.display = 'none';
+  updatePreview();
+}
+
+pImgFile.addEventListener('change', ()=>{
+  const file = pImgFile.files[0];
+  if(!file) return;
+
+  if(file.size > 900*1024){
+    uploadHint.innerHTML = `⚠️ That image is ${(file.size/1024/1024).toFixed(1)}MB — large images make the product code huge and slow to paste. Consider compressing it first, or use an image URL instead.`;
+    uploadHint.style.color = '#c94141';
+  } else {
+    uploadHint.textContent = 'Upload a photo from your device — it gets embedded directly in the product data, no separate file needed.';
+    uploadHint.style.color = '';
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => setUploadedState(reader.result, file.name);
+  reader.readAsDataURL(file);
+});
+removeUploadBtn.addEventListener('click', clearUploadedState);
+
 function openForm(product){
   editingId = product ? product.id : null;
   formTitle.textContent = product ? 'Edit product' : 'Add product';
@@ -520,8 +566,16 @@ function openForm(product){
   pDesc.value = product ? product.desc || '' : '';
   pPrice.value = product ? product.price : '';
   pMrp.value = product && product.mrp ? product.mrp : '';
-  pImg.value = product ? product.img || '' : '';
   pBadge.value = product && product.badge ? product.badge : '';
+
+  clearUploadedState();
+  const existingImg = product ? product.img || '' : '';
+  if(existingImg.startsWith('data:')){
+    setUploadedState(existingImg, 'previously uploaded image');
+  } else {
+    pImg.value = existingImg;
+  }
+
   clearFieldErrors();
   updatePreview();
   formOverlay.classList.add('open');
@@ -548,7 +602,7 @@ function validateForm(){
   if(pPrice.value === '' || Number(pPrice.value) < 0 || isNaN(Number(pPrice.value))){
     document.getElementById('f-pprice').classList.add('invalid'); valid = false;
   }
-  if(pImg.value.trim().length < 1){
+  if(currentImgValue().length < 1){
     document.getElementById('f-pimg').classList.add('invalid'); valid = false;
   }
   return valid;
@@ -565,7 +619,7 @@ formSave.addEventListener('click', ()=>{
     desc: pDesc.value.trim(),
     price: priceVal,
     mrp: mrpVal,
-    img: pImg.value.trim(),
+    img: currentImgValue(),
     badge: pBadge.value || null,
   };
 
