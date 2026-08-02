@@ -1,1 +1,603 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cute Cart — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#FFD6E8;
+  --pink-deep:#F79FC4;
+  --sky:#BEE9F7;
+  --sky-deep:#6FC6E8;
+  --cream:#FFFBFC;
+  --ink:#3A3040;
+  --ink-soft:#8d8394;
+  --white:#FFFFFF;
+  --accent:#FF8FB8;
+  --accent-dark:#EE6FA0;
+  --radius-lg:22px;
+  --radius-md:16px;
+  --radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Nunito Sans', sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Fredoka', sans-serif;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+img{max-width:100%;display:block;}
+
+/* ---------- Header ---------- */
+header{
+  position:sticky; top:0; z-index:30;
+  background:rgba(255,251,252,0.95);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(58,48,64,0.08);
+}
+.nav{
+  max-width:1100px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 24px;
+}
+.brand{
+  display:flex; align-items:center; gap:10px;
+  font-family:'Fredoka'; font-weight:600; font-size:19px;
+}
+.brand-mark{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg, var(--pink-deep), var(--sky-deep));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff; font-size:16px;
+}
+.tag{
+  font-size:11px; font-weight:800; color:var(--accent-dark);
+  background:var(--pink); padding:4px 10px; border-radius:20px;
+  text-transform:uppercase; letter-spacing:.4px;
+}
+.header-actions{display:flex; gap:10px;}
+
+/* ---------- Buttons ---------- */
+.btn{
+  padding:11px 20px; border-radius:30px;
+  font-weight:800; font-size:13.5px;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:transform .15s;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--accent-dark); color:#fff;}
+.btn-ghost{border:1.5px solid rgba(58,48,64,0.18); color:var(--ink);}
+.btn-danger{background:#fff0f0; color:#c94141;}
+.btn-sm{padding:7px 13px; font-size:12px; border-radius:20px;}
+
+/* ---------- Login gate ---------- */
+.gate{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:24px;
+}
+.gate-card{
+  background:var(--white); border-radius:var(--radius-lg);
+  padding:34px 30px; max-width:340px; width:100%;
+  box-shadow:0 12px 34px rgba(58,48,64,0.1);
+  text-align:center;
+}
+.gate-card .em{font-size:38px; margin-bottom:10px;}
+.gate-card h2{font-size:19px; margin-bottom:6px;}
+.gate-card p{font-size:12.5px; color:var(--ink-soft); margin-bottom:18px; line-height:1.5;}
+.gate-card input{
+  width:100%; padding:12px 14px; border-radius:12px;
+  border:1.5px solid rgba(58,48,64,0.15);
+  font-size:14px; text-align:center; letter-spacing:2px;
+  margin-bottom:12px; outline:none;
+}
+.gate-card input:focus{border-color:var(--accent-dark);}
+.gate-error{font-size:12px; color:#c94141; font-weight:700; margin-bottom:10px; display:none;}
+.gate-error.show{display:block;}
+
+/* ---------- Main panel ---------- */
+main{max-width:1100px; margin:0 auto; padding:28px 24px 80px; display:none;}
+main.show{display:block;}
+.panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:22px; flex-wrap:wrap; gap:12px;
+}
+.panel-head h1{font-size:24px; font-weight:600;}
+.panel-head p{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+
+.note-box{
+  background:var(--white); border-radius:14px; padding:14px 16px;
+  font-size:12.5px; color:var(--ink-soft); line-height:1.6;
+  margin-bottom:22px; border:1px dashed rgba(58,48,64,0.15);
+}
+.note-box b{color:var(--ink);}
+
+.p-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+  gap:18px;
+}
+.p-card{
+  background:var(--white); border-radius:var(--radius-lg);
+  overflow:hidden; box-shadow:0 3px 12px rgba(58,48,64,0.07);
+  display:flex; flex-direction:column;
+}
+.p-thumb{
+  aspect-ratio:1/0.85; background:var(--pink); position:relative; overflow:hidden;
+}
+.p-thumb img{width:100%; height:100%; object-fit:cover;}
+.p-thumb .no-img{
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  color:var(--ink-soft); font-size:12px; font-weight:700; text-align:center; padding:10px;
+}
+.p-badge{
+  position:absolute; top:10px; left:10px;
+  background:var(--accent-dark); color:#fff;
+  font-family:'Fredoka'; font-size:10px; font-weight:500;
+  padding:4px 10px; border-radius:20px;
+}
+.p-body{padding:13px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1;}
+.p-name{font-weight:800; font-size:13.5px;}
+.p-desc{font-size:11.5px; color:var(--ink-soft); line-height:1.4; flex:1;}
+.p-price{font-family:'Fredoka'; font-weight:600; font-size:15px;}
+.p-price .strike{
+  font-family:'Nunito Sans'; font-size:10.5px; font-weight:600;
+  color:var(--ink-soft); text-decoration:line-through; margin-left:5px;
+}
+.p-actions{display:flex; gap:8px; margin-top:8px;}
+.p-actions .btn-sm{flex:1; justify-content:center;}
+
+.add-card{
+  border:1.5px dashed rgba(58,48,64,0.2);
+  border-radius:var(--radius-lg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:8px; color:var(--ink-soft); font-weight:800; font-size:13px;
+  min-height:220px; background:none; cursor:pointer;
+  transition:border-color .15s, color .15s;
+}
+.add-card:hover{border-color:var(--accent-dark); color:var(--accent-dark);}
+.add-card .plus{font-size:26px;}
+
+.empty-state{
+  text-align:center; padding:60px 20px; color:var(--ink-soft);
+}
+.empty-state .em{font-size:44px; margin-bottom:10px;}
+
+/* ---------- Modal (add/edit form) ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(58,48,64,0.45);
+  opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:70;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.open{opacity:1; pointer-events:auto;}
+.modal{
+  background:var(--cream); border-radius:var(--radius-lg);
+  width:100%; max-width:460px; max-height:90vh; overflow-y:auto;
+  box-shadow:0 20px 50px rgba(58,48,64,0.25);
+  transform:translateY(16px) scale(0.98);
+  transition:transform .25s cubic-bezier(.22,1,.36,1);
+}
+.modal-overlay.open .modal{transform:translateY(0) scale(1);}
+.modal-head{
+  padding:22px 22px 12px; display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid rgba(58,48,64,0.08);
+}
+.modal-head h3{font-size:18px; font-weight:600;}
+.modal-close{
+  width:32px;height:32px;border-radius:50%; background:var(--white);
+  display:flex;align-items:center;justify-content:center; font-size:16px;
+}
+.modal-body{padding:18px 22px 8px;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12.5px; font-weight:800; margin-bottom:6px;}
+.field input, .field textarea, .field select{
+  width:100%; padding:11px 13px; border-radius:12px;
+  border:1.5px solid rgba(58,48,64,0.15);
+  font-family:'Nunito Sans'; font-size:13.5px; color:var(--ink);
+  background:var(--white); outline:none; transition:border-color .15s;
+}
+.field input:focus, .field textarea:focus, .field select:focus{border-color:var(--accent-dark);}
+.field textarea{resize:vertical; min-height:56px;}
+.field-row{display:flex; gap:10px;}
+.field-row .field{flex:1;}
+.field-hint{font-size:11px; color:var(--ink-soft); margin-top:5px;}
+.field-error{font-size:11px; color:#c94141; font-weight:700; margin-top:5px; display:none;}
+.field.invalid input, .field.invalid textarea{border-color:#c94141;}
+.field.invalid .field-error{display:block;}
+.preview-thumb{
+  width:100%; aspect-ratio:16/9; border-radius:12px; overflow:hidden;
+  background:var(--pink); margin-bottom:14px; display:flex; align-items:center; justify-content:center;
+}
+.preview-thumb img{width:100%; height:100%; object-fit:cover;}
+.preview-thumb .ph-empty{color:var(--ink-soft); font-size:12px; font-weight:700;}
+.modal-foot{padding:8px 22px 22px; display:flex; gap:10px;}
+.modal-foot .btn{flex:1; justify-content:center;}
+
+.toast{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:var(--cream);
+  padding:12px 22px; border-radius:30px; font-size:13px; font-weight:700;
+  display:flex; align-items:center; gap:8px;
+  opacity:0; pointer-events:none; transition:all .25s ease; z-index:80;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+@media (max-width:560px){
+  .panel-head{flex-direction:column; align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- ---------- Login gate ---------- -->
+<div class="gate" id="gate">
+<div class="gate-card">
+<div class="em">🔒</div>
+<h2>Cute Cart Admin</h2>
+<p>Enter the admin PIN to manage products.</p>
+<input type="password" id="pinInput" placeholder="Enter PIN" inputmode="numeric" autocomplete="off">
+<div class="gate-error" id="gateError">Incorrect PIN, try again.</div>
+<button class="btn btn-primary" id="gateSubmit" style="width:100%; justify-content:center;">Enter</button>
+</div>
+</div>
+
+<!-- ---------- Admin panel ---------- -->
+<header id="adminHeader" style="display:none;">
+<div class="nav">
+<div class="brand">
+<span class="brand-mark">CC</span>
+Cute Cart <span class="tag">Admin</span>
+</div>
+<div class="header-actions">
+<button class="btn btn-ghost btn-sm" id="viewSiteBtn">View site ↗</button>
+<button class="btn btn-ghost btn-sm" id="logoutBtn">Log out</button>
+</div>
+</div>
+</header>
+
+<main id="adminMain">
+<div class="panel-head">
+<div>
+<h1>Products</h1>
+<p id="productSummary">0 products</p>
+</div>
+<div class="header-actions">
+<button class="btn btn-ghost" id="copyCodeBtn">📋 Copy product code</button>
+<button class="btn btn-primary" id="addProductBtn">+ Add product</button>
+</div>
+</div>
+
+<div class="note-box">
+<b>How this works:</b> products you add, edit or delete here are saved in this browser and will show up on <b>index.html</b> whenever it's opened in the same browser. To make changes permanent for every visitor (any device), click <b>"Copy product code"</b> and paste it over the <code>DEFAULT_PRODUCTS</code> array in index.html, then re-upload the file to your site.
+</div>
+
+<div id="gridWrap">
+<div class="p-grid" id="pGrid"></div>
+</div>
+</main>
+
+<!-- ---------- Add / Edit modal ---------- -->
+<div class="modal-overlay" id="formOverlay">
+<div class="modal">
+<div class="modal-head">
+<h3 id="formTitle">Add product</h3>
+<button class="modal-close" id="formClose" aria-label="Close">✕</button>
+</div>
+<div class="modal-body">
+<div class="preview-thumb" id="previewThumb"><span class="ph-empty">Image preview</span></div>
+<form id="productForm" novalidate>
+<div class="field" id="f-pname">
+<label for="p-name">Product name</label>
+<input type="text" id="p-name" placeholder="e.g. Ice cream highlighter">
+<div class="field-error">Please enter a name</div>
+</div>
+<div class="field" id="f-pdesc">
+<label for="p-desc">Description</label>
+<textarea id="p-desc" placeholder="Short, cute description"></textarea>
+<div class="field-error">Please enter a description</div>
+</div>
+<div class="field-row">
+<div class="field" id="f-pprice">
+<label for="p-price">Price (₹)</label>
+<input type="number" id="p-price" min="0" placeholder="e.g. 140">
+<div class="field-error">Enter a valid price</div>
+</div>
+<div class="field" id="f-pmrp">
+<label for="p-mrp">MRP (₹, optional)</label>
+<input type="number" id="p-mrp" min="0" placeholder="e.g. 180">
+</div>
+</div>
+<div class="field" id="f-pimg">
+<label for="p-img">Image URL or filename</label>
+<input type="text" id="p-img" placeholder="e.g. icecreamhighliter.jpeg or https://...">
+<div class="field-hint">Paste a link, or the exact filename of an image sitting next to index.html.</div>
+<div class="field-error">Please add an image URL or filename</div>
+</div>
+<div class="field">
+<label for="p-badge">Badge (optional)</label>
+<select id="p-badge">
+<option value="">No badge</option>
+<option value="Bestseller">Bestseller</option>
+<option value="New">New</option>
+<option value="Limited">Limited</option>
+</select>
+</div>
+</form>
+</div>
+<div class="modal-foot">
+<button class="btn btn-ghost" id="formCancel">Cancel</button>
+<button class="btn btn-primary" id="formSave">Save product</button>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast">Saved 🎉</div>
+
+<script>
+(function(){
+
+// ---------- Config ----------
+const ADMIN_PIN = "cute2024"; // change this to your own PIN
+const STORAGE_KEY = 'cuteCartProducts';
+
+const DEFAULT_PRODUCTS = [
+  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
+  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:130, img:"staple.jpeg", badge:null},
+  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:110, img:"memonote.jpeg", badge:"New"},
+  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:120, mrp:120, img:"cookie.jpeg", badge:null},
+  {id:5, name:"Hot bag", desc:"Cute Hot bag.", price:120, mrp:120, img:"hotbag.jpeg", badge:null},
+  {id:6, name:"Chocolate highlighter", desc:"Cute Chocolate highlighter.", price:120, mrp:120, img:"Chocohighliter.jpeg", badge:null},
+];
+
+function formatRs(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
+
+function loadProducts(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed)) return parsed;
+    }
+  }catch(e){}
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PRODUCTS));
+  return DEFAULT_PRODUCTS.slice();
+}
+function saveProducts(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+let products = loadProducts();
+let editingId = null; // null = adding new
+
+// ---------- Elements ----------
+const gate = document.getElementById('gate');
+const pinInput = document.getElementById('pinInput');
+const gateSubmit = document.getElementById('gateSubmit');
+const gateError = document.getElementById('gateError');
+const adminHeader = document.getElementById('adminHeader');
+const adminMain = document.getElementById('adminMain');
+const viewSiteBtn = document.getElementById('viewSiteBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const pGrid = document.getElementById('pGrid');
+const productSummary = document.getElementById('productSummary');
+const addProductBtn = document.getElementById('addProductBtn');
+const copyCodeBtn = document.getElementById('copyCodeBtn');
+
+const formOverlay = document.getElementById('formOverlay');
+const formTitle = document.getElementById('formTitle');
+const formClose = document.getElementById('formClose');
+const formCancel = document.getElementById('formCancel');
+const formSave = document.getElementById('formSave');
+const previewThumb = document.getElementById('previewThumb');
+
+const pName = document.getElementById('p-name');
+const pDesc = document.getElementById('p-desc');
+const pPrice = document.getElementById('p-price');
+const pMrp = document.getElementById('p-mrp');
+const pImg = document.getElementById('p-img');
+const pBadge = document.getElementById('p-badge');
+
+const toast = document.getElementById('toast');
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>toast.classList.remove('show'), 1800);
+}
+
+// ---------- Login gate ----------
+function tryLogin(){
+  if(pinInput.value === ADMIN_PIN){
+    gate.style.display = 'none';
+    adminHeader.style.display = 'block';
+    adminMain.classList.add('show');
+    sessionStorage.setItem('cuteCartAdminAuthed', '1');
+  } else {
+    gateError.classList.add('show');
+    pinInput.value = '';
+    pinInput.focus();
+  }
+}
+gateSubmit.addEventListener('click', tryLogin);
+pinInput.addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+
+if(sessionStorage.getItem('cuteCartAdminAuthed') === '1'){
+  gate.style.display = 'none';
+  adminHeader.style.display = 'block';
+  adminMain.classList.add('show');
+}
+
+logoutBtn.addEventListener('click', ()=>{
+  sessionStorage.removeItem('cuteCartAdminAuthed');
+  location.reload();
+});
+viewSiteBtn.addEventListener('click', ()=>{
+  window.open('index.html', '_blank');
+});
+
+// ---------- Render product grid ----------
+function renderGrid(){
+  productSummary.textContent = `${products.length} product${products.length===1?'':'s'}`;
+
+  const cards = products.map(p => `
+<div class="p-card">
+<div class="p-thumb">
+${p.badge ? `<span class="p-badge">${p.badge}</span>` : ''}
+${p.img ? `<img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+<div class="no-img" style="display:none;">Image not found:<br>${p.img}</div>`
+: `<div class="no-img">No image set</div>`}
+</div>
+<div class="p-body">
+<div class="p-name">${p.name}</div>
+<div class="p-desc">${p.desc||''}</div>
+<div class="p-price">${formatRs(p.price)}${p.mrp && p.mrp!==p.price ? `<span class="strike">${formatRs(p.mrp)}</span>` : ''}</div>
+<div class="p-actions">
+<button class="btn btn-ghost btn-sm" data-action="edit" data-id="${p.id}">✏️ Edit</button>
+<button class="btn btn-danger btn-sm" data-action="delete" data-id="${p.id}">🗑️ Delete</button>
+</div>
+</div>
+</div>
+`).join('');
+
+  pGrid.innerHTML = cards + `
+<button class="add-card" id="addCardBtn" type="button">
+<span class="plus">+</span>
+Add product
+</button>`;
+
+  document.getElementById('addCardBtn').addEventListener('click', ()=>openForm(null));
+}
+
+pGrid.addEventListener('click', e=>{
+  const btn = e.target.closest('[data-action]');
+  if(!btn) return;
+  const id = Number(btn.dataset.id);
+  if(btn.dataset.action === 'edit'){
+    const p = products.find(x=>x.id===id);
+    if(p) openForm(p);
+  }
+  if(btn.dataset.action === 'delete'){
+    const p = products.find(x=>x.id===id);
+    if(p && confirm(`Delete "${p.name}"? This can't be undone.`)){
+      products = products.filter(x=>x.id!==id);
+      saveProducts(products);
+      renderGrid();
+      showToast('Product deleted 🗑️');
+    }
+  }
+});
+
+addProductBtn.addEventListener('click', ()=>openForm(null));
+
+// ---------- Add / edit form ----------
+function clearFieldErrors(){
+  ['f-pname','f-pdesc','f-pprice','f-pimg'].forEach(id=>{
+    document.getElementById(id).classList.remove('invalid');
+  });
+}
+
+function updatePreview(){
+  const url = pImg.value.trim();
+  if(url){
+    previewThumb.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=\\'ph-empty\\'>Can\\'t load this image</span>';">`;
+  } else {
+    previewThumb.innerHTML = `<span class="ph-empty">Image preview</span>`;
+  }
+}
+pImg.addEventListener('input', updatePreview);
+
+function openForm(product){
+  editingId = product ? product.id : null;
+  formTitle.textContent = product ? 'Edit product' : 'Add product';
+  pName.value = product ? product.name : '';
+  pDesc.value = product ? product.desc || '' : '';
+  pPrice.value = product ? product.price : '';
+  pMrp.value = product && product.mrp ? product.mrp : '';
+  pImg.value = product ? product.img || '' : '';
+  pBadge.value = product && product.badge ? product.badge : '';
+  clearFieldErrors();
+  updatePreview();
+  formOverlay.classList.add('open');
+}
+function closeForm(){
+  formOverlay.classList.remove('open');
+  editingId = null;
+}
+formClose.addEventListener('click', closeForm);
+formCancel.addEventListener('click', closeForm);
+formOverlay.addEventListener('click', e=>{ if(e.target===formOverlay) closeForm(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeForm(); });
+
+function validateForm(){
+  let valid = true;
+  clearFieldErrors();
+
+  if(pName.value.trim().length < 2){
+    document.getElementById('f-pname').classList.add('invalid'); valid = false;
+  }
+  if(pDesc.value.trim().length < 2){
+    document.getElementById('f-pdesc').classList.add('invalid'); valid = false;
+  }
+  if(pPrice.value === '' || Number(pPrice.value) < 0 || isNaN(Number(pPrice.value))){
+    document.getElementById('f-pprice').classList.add('invalid'); valid = false;
+  }
+  if(pImg.value.trim().length < 1){
+    document.getElementById('f-pimg').classList.add('invalid'); valid = false;
+  }
+  return valid;
+}
+
+formSave.addEventListener('click', ()=>{
+  if(!validateForm()) return;
+
+  const priceVal = Number(pPrice.value);
+  const mrpVal = pMrp.value.trim() === '' ? priceVal : Number(pMrp.value);
+
+  const data = {
+    name: pName.value.trim(),
+    desc: pDesc.value.trim(),
+    price: priceVal,
+    mrp: mrpVal,
+    img: pImg.value.trim(),
+    badge: pBadge.value || null,
+  };
+
+  if(editingId){
+    products = products.map(p => p.id===editingId ? {...p, ...data} : p);
+    showToast('Product updated ✨');
+  } else {
+    const nextId = products.length ? Math.max(...products.map(p=>p.id)) + 1 : 1;
+    products.push({id: nextId, ...data});
+    showToast('Product added 🎉');
+  }
+
+  saveProducts(products);
+  renderGrid();
+  closeForm();
+});
+
+// ---------- Copy product code ----------
+copyCodeBtn.addEventListener('click', async ()=>{
+  const code = "const DEFAULT_PRODUCTS = " + JSON.stringify(products, null, 2) + ";";
+  try{
+    await navigator.clipboard.writeText(code);
+    showToast('Product code copied 📋');
+  }catch(e){
+    // fallback: show a prompt with the text selected
+    window.prompt('Copy this code and paste it into index.html:', code);
+  }
+});
+
+renderGrid();
+})();
+</script>
+
+</body>
+</html>
