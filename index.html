@@ -60,7 +60,7 @@ header{
 .nav-links{
   display:flex; gap:28px; font-weight:700; font-size:14px; color:var(--ink);
 }
-.nav-links a{opacity:0.75; transition:opacity .15s;}
+.nav-links a{opacity:0.75; transition:opacity .15s; background:none; border:none; font:inherit; cursor:pointer;}
 .nav-links a:hover{opacity:1;}
 .nav-right{display:flex; align-items:center; gap:18px;}
 
@@ -134,6 +134,9 @@ header{
   font-weight:800; font-size:14px;
   border:1.5px solid rgba(58,48,64,0.18);
   color:var(--ink);
+  background:none;
+  cursor:pointer;
+  font-family:inherit;
 }
 
 /* ---------- Strip ---------- */
@@ -377,6 +380,32 @@ footer .fine{font-size:12px; color:rgba(255,251,252,0.6);}
 .field.invalid input, .field.invalid textarea{border-color:var(--accent-dark);}
 .field.invalid .field-error{display:block;}
 
+/* ---------- Our story modal ---------- */
+.story-modal{
+  max-width:460px;
+}
+.story-body{
+  padding:22px 24px 26px;
+}
+.story-avatar{
+  width:64px; height:64px; border-radius:50%;
+  background:linear-gradient(135deg, var(--pink-deep), var(--sky-deep));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fredoka'; font-weight:600; font-size:24px; color:#fff;
+  margin-bottom:16px;
+}
+.story-quote{
+  font-size:14.5px; line-height:1.75; color:var(--ink);
+}
+.story-quote p{margin-bottom:12px;}
+.story-quote p:last-child{margin-bottom:0;}
+.story-signoff{
+  margin-top:16px; font-family:'Fredoka'; font-weight:600; font-size:14px; color:var(--accent-dark);
+}
+.story-role{
+  font-size:12px; color:var(--ink-soft); font-weight:700;
+}
+
 @media (max-width:820px){
   .nav-links{display:none;}
   .hero{grid-template-columns:1fr; padding-top:36px;}
@@ -403,7 +432,7 @@ Cute Cart
 </div>
 <nav class="nav-links">
 <a href="#shop">Shop</a>
-<a href="#about">About</a>
+<button id="ourStoryNavLink" type="button">About</button>
 <a href="#footer">Contact</a>
 </nav>
 <div class="nav-right">
@@ -427,7 +456,7 @@ Cute Cart
 <p>Handpicked cute gift items and kawaii stationery, packed with love and delivered to your door.</p>
 <div class="hero-actions">
 <a href="#shop" class="btn-primary">Shop now</a>
-<a href="#about" class="btn-ghost">Our story</a>
+<button class="btn-ghost" id="ourStoryBtn" type="button">Our story</button>
 </div>
 </div>
 <div>
@@ -531,6 +560,26 @@ Proceed on WhatsApp
 </div>
 </div>
 
+<!-- Our story modal -->
+<div class="modal-overlay" id="storyOverlay">
+<div class="modal story-modal">
+<div class="modal-head">
+<h3>💌 Our story</h3>
+<button class="modal-close" id="storyClose" aria-label="Close">✕</button>
+</div>
+<div class="story-body">
+<div class="story-avatar">R</div>
+<div class="story-quote">
+<p>Hi, I'm Risheen — the founder of Cute Cart.</p>
+<p>I started Cute Cart because I wanted gifting to feel unique, beautiful and just a little bit magical, without being complicated or expensive.</p>
+<p>I love helping people find adorable stationery and gift picks for their favourite special someone — all at prices that are easy on the pocket, delivered straight to their doorstep.</p>
+</div>
+<div class="story-signoff">Risheen Dilshad</div>
+<div class="story-role">Founder, Cute Cart</div>
+</div>
+</div>
+</div>
+
 <div class="toast" id="toast">Added to cart 🎉</div>
 
 <script>
@@ -543,13 +592,10 @@ const WHATSAPP_NUMBER = "918086797099";
 // Each "img" is a direct image URL/path used as the <img src> for that product.
 // Replace with your own product photo URL or local file path any time.
 const products = [
-  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:340, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
-  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:430, img:"staple.jpeg", badge:null},
-  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:410, img:"memonote.jpeg", badge:"New"},
-  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:120, mrp:320, img:"cookie.jpeg", badge:null},
-  
-  {id:5, name:"Hot bag", desc:"cute Hot bag.", price:140, mrp:500, img:"hotbag.jpeg", badge:"Bestseller"},
-  {id:6, name:"Chocolate highlighter", desc:"Cute Chocolate highlighter", price:145, mrp:500, img:"chocohighliter.jpeg", badge:null}
+  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
+  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:130, img:"staple.jpeg", badge:null},
+  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:110, img:"memonote.jpeg", badge:"New"},
+  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:120, mrp:120, img:"cookie.jpeg", badge:null},
 ];
 
 let cart = {}; // id -> qty
@@ -593,6 +639,12 @@ const checkoutClose = document.getElementById('checkoutClose');
 const addressForm = document.getElementById('addressForm');
 const modalSummary = document.getElementById('modalSummary');
 const proceedWaBtn = document.getElementById('proceedWaBtn');
+
+// Our story modal elements
+const storyOverlay = document.getElementById('storyOverlay');
+const storyClose = document.getElementById('storyClose');
+const ourStoryBtn = document.getElementById('ourStoryBtn');
+const ourStoryNavLink = document.getElementById('ourStoryNavLink');
 
 function totalCount(){
   return Object.values(cart).reduce((a,b)=>a+b,0);
@@ -711,8 +763,23 @@ checkoutClose.addEventListener('click', closeCheckout);
 checkoutOverlay.addEventListener('click', e=>{
   if(e.target === checkoutOverlay) closeCheckout();
 });
+
+// ---------- Our story modal logic ----------
+function openStory(){
+  storyOverlay.classList.add('open');
+}
+function closeStory(){
+  storyOverlay.classList.remove('open');
+}
+ourStoryBtn.addEventListener('click', openStory);
+ourStoryNavLink.addEventListener('click', openStory);
+storyClose.addEventListener('click', closeStory);
+storyOverlay.addEventListener('click', e=>{
+  if(e.target === storyOverlay) closeStory();
+});
+
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){ closeDrawer(); closeCheckout(); }
+  if(e.key==='Escape'){ closeDrawer(); closeCheckout(); closeStory(); }
 });
 
 function setFieldError(fieldId, isInvalid){
