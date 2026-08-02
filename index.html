@@ -472,7 +472,7 @@ Cute Cart
 
 <div class="section-head" id="shop">
 <h2>Shop the collection</h2>
-<p id="itemCountLabel">10 cute things</p>
+<p id="itemCountLabel">0 cute things</p>
 </div>
 
 <div class="grid" id="productGrid"></div>
@@ -588,17 +588,35 @@ Proceed on WhatsApp
 // --- WhatsApp seller number (with country code, no + or spaces) ---
 const WHATSAPP_NUMBER = "918086797099";
 
-// --- PRODUCT IMAGES ---
-// Each "img" is a direct image URL/path used as the <img src> for that product.
-// Replace with your own product photo URL or local file path any time.
-const products = [
+// --- PRODUCT DATA ---
+// Products now live in localStorage (key below) so the admin.html page can
+// add / edit / delete them and have it show up here. The array below is only
+// the starter/fallback data used the very first time the site is opened
+// (before any admin edits exist).
+const STORAGE_KEY = 'cuteCartProducts';
+
+const DEFAULT_PRODUCTS = [
   {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
   {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:130, img:"staple.jpeg", badge:null},
   {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:110, img:"memonote.jpeg", badge:"New"},
   {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:120, mrp:120, img:"cookie.jpeg", badge:null},
   {id:5, name:"Hot bag", desc:"Cute Hot bag.", price:120, mrp:120, img:"hotbag.jpeg", badge:null},
-  {id:4, name:"Chocolate highlighter", desc:"Cute Chocolate highlighter.", price:120, mrp:120, img:"Chocohighliter.jpeg", badge:null},
+  {id:6, name:"Chocolate highlighter", desc:"Cute Chocolate highlighter.", price:120, mrp:120, img:"Chocohighliter.jpeg", badge:null},
 ];
+
+function loadProducts(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length) return parsed;
+    }
+  }catch(e){ /* ignore corrupt storage, fall back to defaults */ }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PRODUCTS));
+  return DEFAULT_PRODUCTS;
+}
+
+const products = loadProducts();
 
 let cart = {}; // id -> qty
 
@@ -607,7 +625,11 @@ function formatRs(n){
 }
 
 const grid = document.getElementById('productGrid');
-grid.innerHTML = products.map(p => `
+const itemCountLabel = document.getElementById('itemCountLabel');
+
+function renderProducts(){
+  itemCountLabel.textContent = `${products.length} cute thing${products.length===1?'':'s'}`;
+  grid.innerHTML = products.map(p => `
 <div class="card">
 <div class="ph">
 ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
@@ -617,12 +639,14 @@ ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
 <div class="card-name">${p.name}</div>
 <div class="card-desc">${p.desc}</div>
 <div class="card-foot">
-<div class="card-price">${formatRs(p.price)}${p.mrp ? `<span class="strike">${formatRs(p.mrp)}</span>` : ''}</div>
+<div class="card-price">${formatRs(p.price)}${p.mrp && p.mrp !== p.price ? `<span class="strike">${formatRs(p.mrp)}</span>` : ''}</div>
 <button class="add-btn" data-id="${p.id}" aria-label="Add ${p.name} to cart">+</button>
 </div>
 </div>
 </div>
 `).join('');
+}
+renderProducts();
 
 const cartBtn = document.getElementById('cartBtn');
 const cartCount = document.getElementById('cartCount');
@@ -654,7 +678,7 @@ function totalCount(){
 function totalPrice(){
   return Object.entries(cart).reduce((sum,[id,qty])=>{
     const p = products.find(x=>x.id==id);
-    return sum + p.price*qty;
+    return sum + (p ? p.price*qty : 0);
   },0);
 }
 function showToast(msg){
@@ -682,6 +706,7 @@ function renderCart(){
   drawerFoot.style.display = 'block';
   drawerItems.innerHTML = ids.map(id=>{
     const p = products.find(x=>x.id==id);
+    if(!p) return '';
     const qty = cart[id];
     return `
       <div class="drawer-item">
@@ -741,6 +766,7 @@ function renderModalSummary(){
   const ids = Object.keys(cart);
   const rows = ids.map(id=>{
     const p = products.find(x=>x.id==id);
+    if(!p) return '';
     const qty = cart[id];
     return `<div class="row"><span>${p.name} × ${qty}</span><span>${formatRs(p.price*qty)}</span></div>`;
   }).join('');
@@ -824,6 +850,7 @@ function buildWhatsAppMessage(details){
   lines.push("*Order summary:*");
   ids.forEach(id=>{
     const p = products.find(x=>x.id==id);
+    if(!p) return;
     const qty = cart[id];
     lines.push(`• ${p.name} × ${qty} — ${formatRs(p.price*qty)}`);
   });
