@@ -589,13 +589,9 @@ Proceed on WhatsApp
 const WHATSAPP_NUMBER = "918086797099";
 
 // --- PRODUCT DATA ---
-// Products now live in localStorage (key below) so the admin.html page can
-// add / edit / delete them and have it show up here. The array below is only
-// the starter/fallback data used the very first time the site is opened
-// (before any admin edits exist).
-const STORAGE_KEY = 'cuteCartProducts';
-
-const DEFAULT_PRODUCTS = [
+// Edit this array directly to add, edit, or remove products.
+// Each product needs: id (unique number), name, desc, price, mrp, img, badge (or null).
+const products = [
   {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
   {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:130, img:"staple.jpeg", badge:null},
   {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:110, img:"memonote.jpeg", badge:"New"},
@@ -605,20 +601,6 @@ const DEFAULT_PRODUCTS = [
   {id:7, name:"Sticky note", desc:"Cute Sticky notes.", price:75, mrp:75, img:"sticky.jpeg", badge:null},
   {id:8, name:"Erasable gel pen", desc:"Cute gel pen erasable.", price:190, mrp:190, img:"gelpen.jpeg", badge:null},
 ];
-
-function loadProducts(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      if(Array.isArray(parsed) && parsed.length) return parsed;
-    }
-  }catch(e){ /* ignore corrupt storage, fall back to defaults */ }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PRODUCTS));
-  return DEFAULT_PRODUCTS;
-}
-
-const products = loadProducts();
 
 let cart = {}; // id -> qty
 
