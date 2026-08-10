@@ -157,10 +157,24 @@ header{
 /* ---------- Products ---------- */
 .section-head{
   max-width:1180px; margin:64px auto 24px; padding:0 24px;
-  display:flex; align-items:baseline; justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
 }
 .section-head h2{font-size:26px; font-weight:600;}
+.section-head-right{display:flex; align-items:center; gap:14px;}
 .section-head p{font-size:13px; color:var(--ink-soft); font-weight:700;}
+
+.sort-select{
+  appearance:none;
+  -webkit-appearance:none;
+  background:var(--white) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="%233A3040" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>') no-repeat right 12px center;
+  border:1.5px solid rgba(58,48,64,0.15);
+  border-radius:30px;
+  padding:9px 32px 9px 16px;
+  font-family:'Nunito Sans'; font-weight:700; font-size:12.5px; color:var(--ink);
+  cursor:pointer; outline:none;
+  transition:border-color .15s;
+}
+.sort-select:focus{border-color:var(--accent-dark);}
 
 .grid{
   max-width:1180px; margin:0 auto; padding:0 24px 40px;
@@ -185,6 +199,13 @@ header{
 .badge{
   position:absolute; top:12px; left:12px;
   background:var(--accent-dark); color:#fff;
+  font-family:'Fredoka'; font-weight:500; font-size:10.5px;
+  padding:5px 11px; border-radius:20px;
+  z-index:2;
+}
+.badge-off{
+  position:absolute; top:12px; right:12px;
+  background:var(--sky-deep); color:#fff;
   font-family:'Fredoka'; font-weight:500; font-size:10.5px;
   padding:5px 11px; border-radius:20px;
   z-index:2;
@@ -460,7 +481,7 @@ Cute Cart
 </div>
 </div>
 <div>
-<img src="cart.png" width="400px;" height="500px;">
+<img src="shop.png" width="400px;" height="500px;">
 </div>
 </section>
 
@@ -472,7 +493,14 @@ Cute Cart
 
 <div class="section-head" id="shop">
 <h2>Shop the collection</h2>
+<div class="section-head-right">
 <p id="itemCountLabel">0 cute things</p>
+<select id="sortSelect" class="sort-select" aria-label="Sort products by price">
+<option value="default">Sort: Featured</option>
+<option value="low-high">Price: Low to High</option>
+<option value="high-low">Price: High to Low</option>
+</select>
+</div>
 </div>
 
 <div class="grid" id="productGrid"></div>
@@ -591,51 +619,79 @@ const WHATSAPP_NUMBER = "918086797099";
 // --- PRODUCT DATA ---
 // Edit this array directly to add, edit, or remove products.
 // Each product needs: id (unique number), name, desc, price, mrp, img, badge (or null).
+// mrp = original "before discount" price shown struck-through; price = current selling price.
 const products = [
-  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:140, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
-  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:130, img:"staple.jpeg", badge:null},
-  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:110, img:"memonote.jpeg", badge:"null"},
-  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:120, mrp:120, img:"cookie.jpeg", badge:null},
-  {id:5, name:"Hot bag", desc:"Cute Hot bag.", price:450, mrp:450, img:"hotbag.jpeg", badge:null},
-  {id:6, name:"Chocolate highlighter", desc:"Cute Chocolate highlighter.", price:145, mrp:145, img:"chocohighliter.jpeg", badge:null},
-  {id:7, name:"Sticky note", desc:"Cute Sticky notes.", price:75, mrp:75, img:"sticky.png", badge:null},
-  {id:8, name:"Erasable gel pen", desc:"Cute gel pen erasable.", price:50, mrp:50, img:"gelpen.png", badge:null},  
-  {id:9, name:"Panda mini book", desc:"Cute gel pen erasable.", price:90, mrp:90, img:"panda.png", badge:new},
-  {id:10, name:"Cute lamp", desc:"cute lamp.", price:325, mrp:325, img:"lamp.png", badge:bestseller},  
-  {id:11, name:"Icecream cake erasors", desc:"Icecream cake erasors.", price:135, mrp:135, img:"icecreamerasors.png", badge:null},
-  {id:12, name:"Cute Scissor", desc:"Cute Scissor.", price:105, mrp:105, img:"trianglescissor.png", badge:null},  
-  {id:13, name:"Magic Floating sketch pen set", desc:"Magic Floating sketch pen set.", price:160, mrp:160, img:"magicpen.png", badge:new},
+  {id:1, name:"Ice cream highlighter", desc:"cute Ice cream highlighter.", price:140, mrp:175, img:"icecreamhighliter.jpeg", badge:"Bestseller"},
+  {id:2, name:"Stapler", desc:"Cute looking staplers(violet is currently available).", price:130, mrp:160, img:"staple.jpeg", badge:null},
+  {id:3, name:"Kitti notepad", desc:"Cute pink Kitti memo notepad.", price:110, mrp:140, img:"memonote.jpeg", badge:null},
+  {id:4, name:"Cookie erasor", desc:"Cute cookie erasor set.", price:120, mrp:150, img:"cookie.jpeg", badge:null},
+  {id:5, name:"Hot bag", desc:"Cute Hot bag.", price:450, mrp:550, img:"hotbag.jpeg", badge:null},
+  {id:6, name:"Chocolate highlighter", desc:"Cute Chocolate highlighter.", price:145, mrp:180, img:"chocohighliter.jpeg", badge:null},
+  {id:7, name:"Sticky note", desc:"Cute Sticky notes.", price:75, mrp:95, img:"sticky.png", badge:null},
+  {id:8, name:"Erasable gel pen", desc:"Cute gel pen erasable.", price:50, mrp:65, img:"gelpen.png", badge:null},
+  {id:9, name:"Panda mini book", desc:"Cute gel pen erasable.", price:90, mrp:110, img:"panda.png", badge:"New"},
+  {id:10, name:"Cute lamp", desc:"cute lamp.", price:325, mrp:400, img:"lamp.png", badge:"Bestseller"},
+  {id:11, name:"Icecream cake erasors", desc:"Icecream cake erasors.", price:135, mrp:165, img:"icecreamerasors.png", badge:null},
+  {id:12, name:"Cute Scissor", desc:"Cute Scissor.", price:105, mrp:130, img:"trianglescissor.png", badge:null},
+  {id:13, name:"Magic Floating sketch pen set", desc:"Magic Floating sketch pen set.", price:160, mrp:200, img:"magicpen.png", badge:"New"},
 ];
 
 let cart = {}; // id -> qty
+let currentSort = 'default';
 
 function formatRs(n){
   return '₹' + n.toLocaleString('en-IN');
 }
 
+function discountPct(p){
+  if(!p.mrp || p.mrp <= p.price) return 0;
+  return Math.round(((p.mrp - p.price) / p.mrp) * 100);
+}
+
+function getSortedProducts(){
+  const list = products.slice();
+  if(currentSort === 'low-high'){
+    list.sort((a,b)=> a.price - b.price);
+  } else if(currentSort === 'high-low'){
+    list.sort((a,b)=> b.price - a.price);
+  }
+  return list;
+}
+
 const grid = document.getElementById('productGrid');
 const itemCountLabel = document.getElementById('itemCountLabel');
+const sortSelect = document.getElementById('sortSelect');
 
 function renderProducts(){
+  const list = getSortedProducts();
   itemCountLabel.textContent = `${products.length} cute thing${products.length===1?'':'s'}`;
-  grid.innerHTML = products.map(p => `
+  grid.innerHTML = list.map(p => {
+    const pct = discountPct(p);
+    return `
 <div class="card">
 <div class="ph">
 ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+${pct > 0 ? `<span class="badge-off">${pct}% OFF</span>` : ''}
 <img src="${p.img}" alt="${p.name}" loading="lazy">
 </div>
 <div class="card-body">
 <div class="card-name">${p.name}</div>
 <div class="card-desc">${p.desc}</div>
 <div class="card-foot">
-<div class="card-price">${formatRs(p.price)}${p.mrp && p.mrp !== p.price ? `<span class="strike">${formatRs(p.mrp)}</span>` : ''}</div>
+<div class="card-price">${formatRs(p.price)}${pct > 0 ? `<span class="strike">${formatRs(p.mrp)}</span>` : ''}</div>
 <button class="add-btn" data-id="${p.id}" aria-label="Add ${p.name} to cart">+</button>
 </div>
 </div>
 </div>
-`).join('');
+`;
+  }).join('');
 }
 renderProducts();
+
+sortSelect.addEventListener('change', ()=>{
+  currentSort = sortSelect.value;
+  renderProducts();
+});
 
 const cartBtn = document.getElementById('cartBtn');
 const cartCount = document.getElementById('cartCount');
